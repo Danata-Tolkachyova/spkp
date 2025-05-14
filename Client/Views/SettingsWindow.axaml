@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Client.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="220"
+        x:Class="Client.SettingsWindow"
+		Width="400"
+		Height="220"
+        Title="SettingsWindow">
+	<!--<Window.Resources>
+		<Style Selector="TextBlock">
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+	</Window.Resources>-->
+	
+	<StackPanel x:DataType="vm:UserViewModel">
+		<TextBlock Text="Настройки"
+				   Padding="10"
+				   Background="LightGray"
+				   FontWeight="SemiBold"/>
+		<DockPanel Margin="10">
+			<TextBox DockPanel.Dock="Right"
+					 Width="200"/>
+			<TextBlock Text="Имя"
+					   VerticalAlignment="Center"/>
+		</DockPanel>
+		<DockPanel Margin="10,0">
+			<TextBox DockPanel.Dock="Right"
+					 Width="200"
+					 Text="{Binding IpAddress}"/>
+			<TextBlock Text="IP Адрес сервера"
+					   VerticalAlignment="Center"/>
+		</DockPanel>
+		<DockPanel Margin="10,10">
+			<TextBox DockPanel.Dock="Right"
+					 Width="200"
+					 Text="{Binding Port}"
+					 />
+			<TextBlock Text="Порт"
+					   VerticalAlignment="Center"/>
+		</DockPanel>
+		
+		<Button Content="Применить"
+				Margin="10,0,10,10"
+				HorizontalAlignment="Right"/>
+	</StackPanel>
+</Window>
