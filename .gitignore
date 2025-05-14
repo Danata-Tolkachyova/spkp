@@ -444,6 +444,7 @@ $RECYCLE.BIN/
 .idea/
 *.sln.iml
 
+/DataServer/logger
 /TcpServer/tcp_server
 
 
