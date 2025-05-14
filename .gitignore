@@ -444,6 +444,9 @@ $RECYCLE.BIN/
 .idea/
 *.sln.iml
 
+/TcpServer/tcp_server
+
+
 ##
 ## Visual Studio Code
 ##
