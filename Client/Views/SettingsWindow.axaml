@@ -6,8 +6,8 @@
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="220"
         x:Class="Client.SettingsWindow"
 		Width="400"
-		Height="220"
-        Title="SettingsWindow">
+		Height="250"
+        Title="Настройки">
 	<!--<Window.Resources>
 		<Style Selector="TextBlock">
 			<Setter Property="VerticalAlignment" Value="Center"/>
@@ -21,14 +21,17 @@
 				   FontWeight="SemiBold"/>
 		<DockPanel Margin="10">
 			<TextBox DockPanel.Dock="Right"
-					 Width="200"/>
+					 Width="200"
+					 Watermark="Имя"
+					 Text="{Binding User.Name}"/>
 			<TextBlock Text="Имя"
 					   VerticalAlignment="Center"/>
 		</DockPanel>
 		<DockPanel Margin="10,0">
 			<TextBox DockPanel.Dock="Right"
 					 Width="200"
-					 Text="{Binding IpAddress}"/>
+					 Text="{Binding IpAddress}"
+					 Watermark="Адрес"/>
 			<TextBlock Text="IP Адрес сервера"
 					   VerticalAlignment="Center"/>
 		</DockPanel>
@@ -36,7 +39,7 @@
 			<TextBox DockPanel.Dock="Right"
 					 Width="200"
 					 Text="{Binding Port}"
-					 />
+					 Watermark="Порт"/>
 			<TextBlock Text="Порт"
 					   VerticalAlignment="Center"/>
 		</DockPanel>

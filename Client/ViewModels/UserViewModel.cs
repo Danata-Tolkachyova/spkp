@@ -12,6 +12,8 @@ namespace Client.ViewModels
 {
     internal class UserViewModel : ViewModelBase
     {
+        private SettingsWindow settingsWindow;
+
         private string _IpAddress = "127.0.0.1";
         public string IpAddress
         {
@@ -19,21 +21,12 @@ namespace Client.ViewModels
             set { _IpAddress = value; OnPropertyChanged(); }
         }
 
-
         private int _Port = 8888;
         public int Port
         {
             get { return _Port; }
             set { _Port = value; OnPropertyChanged(); }
         }
-
-
-        //private int _BufferSize = 1024;
-        //public int BufferSize
-        //{
-        //    get { return _BufferSize; }
-        //    set { _BufferSize = value; OnPropertyChanged(); }
-        //}
 
 
         private User _User;
@@ -79,7 +72,9 @@ namespace Client.ViewModels
         public UserViewModel()
         {
             Chat = new Chat();
-            ConnectToServer();
+            User = new User();
+
+            OpenSettingsWindow();
         }
 
 
@@ -94,7 +89,11 @@ namespace Client.ViewModels
                 TcpClient = new TcpClient();
                 TcpClient.Connect(IPAddress.Parse(IpAddress), Port);
 
-                Chat.Messages.Add(new ServiceMessage("Подключен к серверу!"));
+                Chat.Messages.Add(new ServiceMessage("Синхронизация данных с сервером"));
+
+                // Отправляем имя серверу
+                byte[] nameData = Encoding.UTF8.GetBytes(User.Name);
+                TcpClient.GetStream().Write(nameData, 0, nameData.Length);
 
                 // Запуск потока для чтения сообщений от сервера
                 Thread receiveThread = new Thread(() => ReceiveMessages(TcpClient, Chat));
@@ -113,12 +112,18 @@ namespace Client.ViewModels
 
         public void OpenSettingsWindow()
         {
-            new SettingsWindow() { DataContext = this }.Show();
+            settingsWindow = new SettingsWindow() { DataContext = this, Topmost = true };
+            settingsWindow.Show();
         }
 
 
         public void ApplySettings()
         {
+            if (User.HasErrors) { return; }
+
+            settingsWindow.Close();
+
+            Console.WriteLine($"Username: {User.Name}");
             ConnectToServer();
         }
 
