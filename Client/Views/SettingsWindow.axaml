@@ -43,6 +43,7 @@
 		
 		<Button Content="Применить"
 				Margin="10,0,10,10"
-				HorizontalAlignment="Right"/>
+				HorizontalAlignment="Right"
+				Command="{Binding ApplySettings}"/>
 	</StackPanel>
 </Window>

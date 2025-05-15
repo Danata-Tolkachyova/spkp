@@ -8,18 +8,27 @@ using System.Threading.Tasks;
 
 namespace ChatModel
 {
+	/// <summary>
+	/// Чат с сообщениями
+	/// </summary>
 	public class Chat : ObservableObject
 	{
-		private ObservableCollection<Message> _Messages;
-		public ObservableCollection<Message> Messages
+		private ObservableCollection<IMessage> _Messages;
+		/// <summary>
+		/// Все сообщения в чате (в том числе системные)
+		/// </summary>
+		public ObservableCollection<IMessage> Messages
 		{
 			get { return _Messages; }
 			set { SetProperty(ref _Messages, value); }
 		}
 
+		/// <summary>
+		/// Создать экземпляр чата
+		/// </summary>
 		public Chat() 
 		{
-			Messages = new ObservableCollection<Message>();
+			_Messages = new ObservableCollection<IMessage>();
 		}
     }
 }

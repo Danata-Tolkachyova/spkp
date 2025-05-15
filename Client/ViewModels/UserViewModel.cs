@@ -7,8 +7,6 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.Input;
 
 namespace Client.ViewModels
 {
@@ -89,13 +87,14 @@ namespace Client.ViewModels
         {
             try
             {
-                Chat.Messages.Add(new Message($"Выполняется подключение к серверу {IpAddress}:{Port}", false, true));
+                Console.WriteLine($"Conntecting to {IpAddress}:{Port}...");
+                Chat.Messages.Add(new ServiceMessage($"Выполняется подключение к серверу {IpAddress}:{Port}"));
 
                 // Создание TCP-клиента и подключение к серверу
                 TcpClient = new TcpClient();
                 TcpClient.Connect(IPAddress.Parse(IpAddress), Port);
 
-                Chat.Messages.Add(new Message("Подключен к серверу!", false, true));
+                Chat.Messages.Add(new ServiceMessage("Подключен к серверу!"));
 
                 // Запуск потока для чтения сообщений от сервера
                 Thread receiveThread = new Thread(() => ReceiveMessages(TcpClient, Chat));
@@ -106,7 +105,8 @@ namespace Client.ViewModels
             }
             catch (Exception ex)
             {
-                Chat.Messages.Add(new Message($"Error: {ex.Message}", false, true));
+                Chat.Messages.Add(new ErrorMessage($"Error: {ex.Message}"));
+                Console.WriteLine($"Conntecting error: { ex.Message}");
             }
         }
         
@@ -123,12 +123,11 @@ namespace Client.ViewModels
         }
 
 
-        //[RelayCommand(CanExecute = nameof(CanSendMessages))]
         public void SendMessage()
         {
-            Console.WriteLine($"SENDING MESSAGE: {Message}");
+            if (!CanSendMessages || string.IsNullOrEmpty(Message)) { return; }
 
-            if (string.IsNullOrEmpty(Message)) return;
+            Console.WriteLine($"SENDING MESSAGE: {Message}");
 
             try
             {
@@ -136,13 +135,14 @@ namespace Client.ViewModels
                 NetworkStream stream = TcpClient.GetStream();
                 stream.Write(data, 0, data.Length);
 
-                Chat.Messages.Add(new Message(Message));
+                Chat.Messages.Add(new Message(Message, true));
 
                 Message = "";
             }
             catch (Exception ex)
             {
-                Chat.Messages.Add(new Message($"Error: {ex.Message}", false, true));
+                Chat.Messages.Add(new ErrorMessage($"Error: {ex.Message}"));
+                Console.WriteLine($"Sending error: {ex.Message}");
             }
         }
 
@@ -162,11 +162,11 @@ namespace Client.ViewModels
                     if (bytesRead == 0)
                     {
                         Console.WriteLine("Server disconnected");
+                        chat.Messages.Add(new ErrorMessage("Server disconnected"));
                         Environment.Exit(0);
                     }
 
                     chat.Messages.Add(new Message(Encoding.UTF8.GetString(buffer, 0, bytesRead)));
-                    
                 }
             }
             catch (Exception)

@@ -47,19 +47,31 @@
 				<Style Selector="TextBlock.ServiceMessage">
 					<Setter Property="HorizontalAlignment" Value="Center"/>
 					<Setter Property="TextAlignment" Value="Center"/>
-					<Setter Property="Foreground" Value="Orange"/>
 				</Style>
 			</ListBox.Styles>
-			<ListBox.ItemTemplate>
+			<ListBox.DataTemplates>
 				<DataTemplate DataType="m:Message">
 					<TextBlock Text="{Binding Text}"
 							   Margin="0"
 							   TextWrapping="Wrap"
 							   Classes.Message="{Binding !IsMyMessage}"
-							   Classes.MyMessage="{Binding IsMyMessage}"
-							   Classes.ServiceMessage="{Binding IsServiceMessage}"/>
+							   Classes.MyMessage="{Binding IsMyMessage}"/>
 				</DataTemplate>
-			</ListBox.ItemTemplate>
+				<DataTemplate DataType="m:ServiceMessage">
+					<TextBlock Text="{Binding Text}"
+							   Margin="0"
+							   TextWrapping="Wrap"
+							   Classes="ServiceMessage"
+							   Foreground="Orange"/>
+				</DataTemplate>
+				<DataTemplate DataType="m:ErrorMessage">
+					<TextBlock Text="{Binding Text}"
+							   Margin="0"
+							   TextWrapping="Wrap"
+							   Classes="ServiceMessage"
+							   Foreground="Red"/>
+				</DataTemplate>
+			</ListBox.DataTemplates>
 		</ListBox>
 	</DockPanel>
 </UserControl>
