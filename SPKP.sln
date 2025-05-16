@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatModel", "ChatModel\Chat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatModel.Tests", "ChatModel.Tests\ChatModel.Tests.csproj", "{27115F8B-015C-4CA6-8B91-AB9D7BE075E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Console", "..\ClientConsole\Client.Console.csproj", "{EBC550C5-CD1D-09E6-E9CD-A652547B1F61}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Console", "Client.Console\Client.Console.csproj", "{E75B8636-00A6-32D9-A6A4-CD3538A04932}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{27115F8B-015C-4CA6-8B91-AB9D7BE075E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27115F8B-015C-4CA6-8B91-AB9D7BE075E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27115F8B-015C-4CA6-8B91-AB9D7BE075E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EBC550C5-CD1D-09E6-E9CD-A652547B1F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EBC550C5-CD1D-09E6-E9CD-A652547B1F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EBC550C5-CD1D-09E6-E9CD-A652547B1F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EBC550C5-CD1D-09E6-E9CD-A652547B1F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E75B8636-00A6-32D9-A6A4-CD3538A04932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E75B8636-00A6-32D9-A6A4-CD3538A04932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E75B8636-00A6-32D9-A6A4-CD3538A04932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E75B8636-00A6-32D9-A6A4-CD3538A04932}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
