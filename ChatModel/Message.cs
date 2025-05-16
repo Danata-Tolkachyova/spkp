@@ -29,7 +29,7 @@ namespace ChatModel
         /// <summary>
         /// Время отправки
         /// </summary>
-        public DateTime SendDate { get; }
+        //public DateTime SendDate { get; }
 
         /// <summary>
         /// Принадлежит ли сообщение текущему пользователю
@@ -45,7 +45,7 @@ namespace ChatModel
         {
             UserName = userName;
             Text = text;
-            SendDate = DateTime.Now;
+            //SendDate = DateTime.Now;
         }
 
         /// <summary>
@@ -55,9 +55,16 @@ namespace ChatModel
         /// <param name="isMyMessage"></param>
         public Message(string servertext, bool isMyMessage = false)
         {
-            var data = servertext.TrimEnd('\n').Split(' ');
-            SendDate = DateTime.Parse(data[0]);
-            Text = data[1];
+            //var data = servertext.TrimEnd('\n').Split(' ');
+
+            //if (data.Length > 1)
+            //{
+            //    SendDate = DateTime.Parse(data[0]);
+            //    Text = data[1];
+            //}
+
+            Text = servertext;
+
             IsMyMessage = isMyMessage;
         }
     }

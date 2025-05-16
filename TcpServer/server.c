@@ -15,6 +15,7 @@
 #define PORT 8888
 #define MAX_CLIENTS 10
 #define BUFFER_SIZE 1024
+#define NAME_SIZE 32
 #define MSGQ_KEY 1234
 
 struct msg_buffer {
@@ -22,15 +23,20 @@ struct msg_buffer {
     char msg_text[BUFFER_SIZE];
 };
 
+struct client_info {
+    int socket;
+    char name[NAME_SIZE];
+};
+
 int msgq_id;
-int client_sockets[MAX_CLIENTS] = {0};
+struct client_info clients[MAX_CLIENTS];
 
 void handle_signal(int sig) {
     printf("\nЗавершение сервера...\n");
     
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (client_sockets[i] > 0) {
-            close(client_sockets[i]);
+        if (clients[i].socket > 0) {
+            close(clients[i].socket);
         }
     }
     
@@ -54,14 +60,23 @@ void send_to_storage(const char *message) {
 
 void broadcast_message(const char *message, int exclude_fd) {
     for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (client_sockets[i] > 0 && client_sockets[i] != exclude_fd) {
-            if (send(client_sockets[i], message, strlen(message), 0) == -1) {
+        if (clients[i].socket > 0 && clients[i].socket != exclude_fd) {
+            if (send(clients[i].socket, message, strlen(message), 0) == -1) {
                 perror("send");
-                close(client_sockets[i]);
-                client_sockets[i] = 0;
+                close(clients[i].socket);
+                memset(&clients[i], 0, sizeof(struct client_info));
             }
         }
     }
+}
+
+int find_client_by_socket(int socket) {
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (clients[i].socket == socket) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 int main() {
@@ -119,7 +134,7 @@ int main() {
         max_sd = server_fd;
         
         for (i = 0; i < MAX_CLIENTS; i++) {
-            sd = client_sockets[i];
+            sd = clients[i].socket;
             if (sd > 0) {
                 FD_SET(sd, &readfds);
             }
@@ -142,33 +157,61 @@ int main() {
             printf("Новое подключение, socket fd: %d, IP: %s, порт: %d\n",
                    new_socket, inet_ntoa(address.sin_addr), ntohs(address.sin_port));
             
+            // Получаем имя клиента
+            valread = read(new_socket, buffer, BUFFER_SIZE - 1);
+            if (valread <= 0) {
+                close(new_socket);
+                continue;
+            }
+            buffer[valread] = '\0';
+            
+            // Ищем свободный слот для клиента
             for (i = 0; i < MAX_CLIENTS; i++) {
-                if (client_sockets[i] == 0) {
-                    client_sockets[i] = new_socket;
-                    printf("Добавлен в список сокетов как %d\n", i);
+                if (clients[i].socket == 0) {
+                    clients[i].socket = new_socket;
+                    strncpy(clients[i].name, buffer, NAME_SIZE - 1);
+                    clients[i].name[NAME_SIZE - 1] = '\0';
                     
-                    char welcome[100];
-                    snprintf(welcome, sizeof(welcome), "Добро пожаловать в чат! Ваш ID: %d\n", new_socket);
+                    printf("Добавлен новый клиент: %s (socket %d)\n", clients[i].name, new_socket);
+                    
+                    char welcome[BUFFER_SIZE];
+                    snprintf(welcome, sizeof(welcome), "Добро пожаловать в чат, %s!\n", clients[i].name);
                     if (send(new_socket, welcome, strlen(welcome), 0) == -1) {
                         perror("send");
                     }
+                    
+                    // Оповещаем других пользователей
+                    char join_msg[BUFFER_SIZE];
+                    snprintf(join_msg, sizeof(join_msg), "* %s присоединился к чату *\n", clients[i].name);
+                    broadcast_message(join_msg, new_socket);
+                    send_to_storage(join_msg);
+                    
                     break;
                 }
             }
         }
         
         for (i = 0; i < MAX_CLIENTS; i++) {
-            sd = client_sockets[i];
+            sd = clients[i].socket;
             if (sd > 0 && FD_ISSET(sd, &readfds)) {
                 if ((valread = read(sd, buffer, BUFFER_SIZE - 1)) == 0) {
                     getpeername(sd, (struct sockaddr*)&address, &addrlen);
-                    printf("Клиент отключился, IP %s, порт %d\n",
-                           inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+                    printf("%s отключился, IP %s, порт %d\n",
+                           clients[i].name, inet_ntoa(address.sin_addr), ntohs(address.sin_port));
+                    
+                    // Оповещаем о выходе пользователя
+                    char leave_msg[BUFFER_SIZE];
+                    snprintf(leave_msg, sizeof(leave_msg), "* %s покинул чат *\n", clients[i].name);
+                    broadcast_message(leave_msg, sd);
+                    send_to_storage(leave_msg);
                     
                     close(sd);
-                    client_sockets[i] = 0;
+                    memset(&clients[i], 0, sizeof(struct client_info));
                 } else {
                     buffer[valread] = '\0';
+                    
+                    int client_idx = find_client_by_socket(sd);
+                    if (client_idx == -1) continue;
                     
                     time_t now = time(NULL);
                     struct tm *tm_info = localtime(&now);
@@ -176,8 +219,8 @@ int main() {
                     strftime(time_str, sizeof(time_str), "%H:%M:%S", tm_info);
                     
                     char formatted_msg[BUFFER_SIZE + 50];
-                    snprintf(formatted_msg, sizeof(formatted_msg), "[%s] Клиент %d: %s", 
-                            time_str, sd, buffer);
+                    snprintf(formatted_msg, sizeof(formatted_msg), "[%s] %s: %s", 
+                            time_str, clients[client_idx].name, buffer);
                     
                     printf("%s\n", formatted_msg);
                     
